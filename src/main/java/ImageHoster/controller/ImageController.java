@@ -50,6 +50,7 @@ public class ImageController {
         Image image = imageService.getImage(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments",image.getComments());
         return "images/image";
     }
 
@@ -109,6 +110,7 @@ public class ImageController {
         } else {
             List<Tag> tags = image.getTags();
             model.addAttribute("tags", tags);
+            model.addAttribute("comments",image.getComments());
             return "images/image";
         }
     }
@@ -167,10 +169,10 @@ public class ImageController {
             imageService.deleteImage(imageId);
             return "redirect:/images";
         } else {
+            model.addAttribute("comments",image.getComments());
             return "images/image";
         }
     }
-
 
     //This method converts the image to Base64 format
     private String convertUploadedFileToBase64(MultipartFile file) throws IOException {
