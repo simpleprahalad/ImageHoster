@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Controller
@@ -42,14 +44,16 @@ public class UserController {
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user, Model model) {
         String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
-        if(userService.registerUser(user)){
-            return "redirect:/users/login";
+        if(!validatePassword(user.getPassword())) {
+            UserProfile profile = new UserProfile();
+            user.setProfile(profile);
+            model.addAttribute("User", user);
+            model.addAttribute("passwordTypeError",error);
+            return "users/registration";
         }
-        UserProfile profile = new UserProfile();
-        user.setProfile(profile);
-        model.addAttribute("User", user);
-        model.addAttribute("passwordTypeError",error);
-        return "users/registration";
+
+        userService.registerUser(user);
+        return "users/login";
     }
 
     //This controller method is called when the request pattern is of type 'users/login'
@@ -85,5 +89,18 @@ public class UserController {
         List<Image> images = imageService.getAllImages();
         model.addAttribute("images", images);
         return "index";
+    }
+
+    // Method to validate that password string sent to this method has atleast 1 number, 1 alphabet and 1
+    // special character. If the string sent matches the criteria, true is returned else false is returned
+    private boolean validatePassword(String password) {
+        String regEx = "^(?=.{3,})(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$";
+        Pattern p = Pattern.compile(regEx);
+
+        if (password == null) {
+            return false;
+        }
+        Matcher m = p.matcher(password);
+        return m.matches();
     }
 }

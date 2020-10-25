@@ -5,9 +5,6 @@ import ImageHoster.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Service
 public class UserService {
 
@@ -15,12 +12,8 @@ public class UserService {
     private UserRepository userRepository;
 
     //Call the registerUser() method in the UserRepository class to persist the user record in the database
-    public boolean registerUser(User newUser) {
-        if (validatePassword(newUser.getPassword())) {
-            userRepository.registerUser(newUser);
-            return true;
-        }
-        return false;
+    public void registerUser(User newUser) {
+        userRepository.registerUser(newUser);
     }
 
     //Since we did not have any user in the database, therefore the user with username 'upgrad' and password 'password' was hard-coded
@@ -37,16 +30,5 @@ public class UserService {
         } else {
             return null;
         }
-    }
-
-    private boolean validatePassword(String password) {
-        String regEx = "^(?=.{3,})(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$";
-        Pattern p = Pattern.compile(regEx);
-
-        if (password == null) {
-            return false;
-        }
-        Matcher m = p.matcher(password);
-        return m.matches();
     }
 }
